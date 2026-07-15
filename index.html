@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dallas — Steakhouse & Grill</title>
+<meta name="description" content="Le Dallas, steakhouse et grill à Argenteuil. Viandes maturées, ambiance Texas, cuisine au feu de bois.">
+<style>
+  :root{
+    --noir:#141210;
+    --noir-2:#1e1b18;
+    --creme:#f4ede0;
+    --or:#c8922e;
+    --or-clair:#e0b556;
+    --rouge:#8f2d21;
+    --gris:#a89f92;
+    --font-titre:'Georgia','Times New Roman',serif;
+    --font-corps:'Helvetica Neue',Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--noir);
+    color:var(--creme);
+    font-family:var(--font-corps);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--font-titre);font-weight:normal;letter-spacing:.5px}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  .or{color:var(--or-clair)}
+
+  /* NAV */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(20,18,16,.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(200,146,46,.2);
+  }
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{font-family:var(--font-titre);font-size:1.5rem;letter-spacing:2px}
+  .logo b{color:var(--or-clair);font-weight:normal}
+  .nav-links{display:flex;gap:32px;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
+  .nav-links a{color:var(--gris);transition:color .2s}
+  .nav-links a:hover{color:var(--or-clair)}
+  .nav-cta{
+    border:1px solid var(--or);color:var(--or-clair);
+    padding:8px 18px;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;
+    transition:all .2s;border-radius:2px;
+  }
+  .nav-cta:hover{background:var(--or);color:var(--noir)}
+  .burger{display:none;font-size:1.5rem;cursor:pointer;color:var(--or-clair)}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;display:flex;align-items:center;
+    background:
+      radial-gradient(ellipse at 70% 30%, rgba(143,45,33,.25), transparent 60%),
+      linear-gradient(180deg, #1a1613 0%, #141210 100%);
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;
+    background-image:repeating-linear-gradient(45deg, rgba(200,146,46,.03) 0 2px, transparent 2px 40px);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative;z-index:2;padding-top:70px}
+  .tagline{
+    color:var(--or);letter-spacing:4px;text-transform:uppercase;font-size:.8rem;margin-bottom:20px;
+  }
+  .hero h1{font-size:clamp(3rem,9vw,6.5rem);line-height:.95;margin-bottom:24px}
+  .hero p{max-width:520px;color:var(--gris);font-size:1.1rem;margin-bottom:36px}
+  .btn{
+    display:inline-block;background:var(--or);color:var(--noir);
+    padding:15px 34px;letter-spacing:1.5px;text-transform:uppercase;font-size:.85rem;font-weight:bold;
+    border-radius:2px;transition:transform .15s, background .2s;
+  }
+  .btn:hover{background:var(--or-clair);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;border:1px solid var(--gris);color:var(--creme);margin-left:14px}
+  .btn-ghost:hover{border-color:var(--or);color:var(--or-clair)}
+
+  /* SECTIONS */
+  section{padding:110px 0}
+  .sec-tag{color:var(--or);letter-spacing:3px;text-transform:uppercase;font-size:.75rem;margin-bottom:14px}
+  .sec-title{font-size:clamp(2rem,5vw,3rem);margin-bottom:20px}
+  .divider{width:60px;height:2px;background:var(--or);margin:20px 0 40px}
+
+  /* ABOUT */
+  .about{background:var(--noir-2)}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .about p{color:var(--gris);margin-bottom:18px}
+  .stats{display:flex;gap:40px;margin-top:30px}
+  .stat b{display:block;font-family:var(--font-titre);font-size:2.4rem;color:var(--or-clair)}
+  .stat span{font-size:.8rem;letter-spacing:1px;text-transform:uppercase;color:var(--gris)}
+  .about-visual{
+    aspect-ratio:4/5;border-radius:4px;
+    background:
+      linear-gradient(135deg, rgba(200,146,46,.15), transparent),
+      repeating-linear-gradient(120deg, #241f1a 0 20px, #1c1815 20px 40px);
+    border:1px solid rgba(200,146,46,.25);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .about-visual span{font-family:var(--font-titre);font-size:5rem;color:rgba(200,146,46,.35)}
+
+  /* MENU */
+  .menu-cat{margin-bottom:50px}
+  .menu-cat h3{font-size:1.6rem;color:var(--or-clair);margin-bottom:6px}
+  .menu-cat .cat-sub{color:var(--gris);font-size:.85rem;margin-bottom:26px}
+  .menu-item{
+    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+    padding:16px 0;border-bottom:1px solid rgba(168,159,146,.15);
+  }
+  .menu-item .mi-name{font-size:1.15rem}
+  .menu-item .mi-desc{color:var(--gris);font-size:.85rem;font-weight:normal}
+  .menu-item .mi-price{color:var(--or-clair);font-family:var(--font-titre);font-size:1.2rem;white-space:nowrap}
+  .menu-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px 60px}
+
+  /* HOURS + CONTACT */
+  .info{background:var(--noir-2)}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+  .hours-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(168,159,146,.12);color:var(--gris)}
+  .hours-row b{color:var(--creme);font-weight:normal}
+  .contact-line{margin-bottom:14px;color:var(--gris)}
+  .contact-line b{display:block;color:var(--or-clair);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+
+  /* RESA */
+  .resa{text-align:center;background:linear-gradient(180deg,#141210,#1a1613)}
+  .resa .sec-title{margin-bottom:16px}
+  .resa p{color:var(--gris);max-width:480px;margin:0 auto 34px}
+  form{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left}
+  form .full{grid-column:1/-1}
+  label{display:block;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--gris);margin-bottom:6px}
+  input,select{
+    width:100%;padding:12px 14px;background:var(--noir);border:1px solid rgba(168,159,146,.25);
+    color:var(--creme);border-radius:2px;font-family:inherit;font-size:.95rem;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--or)}
+
+  /* FOOTER */
+  footer{padding:50px 0;text-align:center;border-top:1px solid rgba(200,146,46,.2)}
+  footer .logo{font-size:1.8rem;margin-bottom:14px}
+  .social{display:flex;gap:24px;justify-content:center;margin:20px 0;color:var(--gris);font-size:.85rem;letter-spacing:1px}
+  .social a:hover{color:var(--or-clair)}
+  .copy{color:#6b645a;font-size:.75rem;margin-top:16px}
+
+  @media(max-width:820px){
+    .nav-links,.nav-cta{display:none}
+    .burger{display:block}
+    .about-grid,.info-grid{grid-template-columns:1fr;gap:40px}
+    .menu-cols{grid-template-columns:1fr}
+    form{grid-template-columns:1fr}
+    .btn-ghost{margin-left:0;margin-top:12px}
+    section{padding:80px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo">LE <b>DALLAS</b></div>
+    <div class="nav-links">
+      <a href="#apropos">L'esprit</a>
+      <a href="#menu">La carte</a>
+      <a href="#infos">Infos</a>
+      <a href="#resa">Réserver</a>
+    </div>
+    <a href="#resa" class="nav-cta">Réserver</a>
+    <div class="burger">&#9776;</div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="tagline">Steakhouse &amp; Grill · Argenteuil</div>
+    <h1>Le goût<br>du <span class="or">Texas</span>.</h1>
+    <p>Viandes maturées, cuisson au feu de bois, portions généreuses. Une adresse taillée pour les vrais appétits.</p>
+    <a href="#resa" class="btn">Réserver une table</a>
+    <a href="#menu" class="btn btn-ghost">Voir la carte</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="apropos">
+  <div class="wrap about-grid">
+    <div>
+      <div class="sec-tag">Notre maison</div>
+      <h2 class="sec-title">Le feu, la viande, rien de superflu.</h2>
+      <div class="divider"></div>
+      <p>Au Dallas, on croit à la simplicité bien faite. Des pièces de boeuf sélectionnées, maturées sur place, saisies sur un grill à haute température qui garde le jus à l'intérieur.</p>
+      <p>Ambiance chaleureuse, service franc, assiettes qui ne mentent pas. Ici on vient pour manger sérieusement et repartir rassasié.</p>
+      <div class="stats">
+        <div class="stat"><b>28j</b><span>Maturation</span></div>
+        <div class="stat"><b>100%</b><span>Feu de bois</span></div>
+        <div class="stat"><b>0</b><span>Compromis</span></div>
+      </div>
+    </div>
+    <div class="about-visual"><span>&#9733;</span></div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="wrap">
+    <div class="sec-tag">La carte</div>
+    <h2 class="sec-title">Nos incontournables</h2>
+    <div class="divider"></div>
+
+    <div class="menu-cat">
+      <h3>Les viandes</h3>
+      <div class="cat-sub">Servies avec frites maison et sauce au choix</div>
+      <div class="menu-cols">
+        <div class="menu-item">
+          <div><div class="mi-name">Entrecôte Angus 300g</div><div class="mi-desc">Maturée 28 jours, os à moelle</div></div>
+          <div class="mi-price">28 €</div>
+        </div>
+        <div class="menu-item">
+          <div><div class="mi-name">Côte de boeuf 1kg</div><div class="mi-desc">À partager, pour deux</div></div>
+          <div class="mi-price">62 €</div>
+        </div>
+        <div class="menu-item">
+          <div><div class="mi-name">Burger Dallas</div><div class="mi-desc">Double steak, cheddar, oignons grillés</div></div>
+          <div class="mi-price">19 €</div>
+        </div>
+        <div class="menu-item">
+          <div><div class="mi-name">Ribs BBQ au miel</div><div class="mi-desc">Travers de porc laqués, cuisson lente</div></div>
+          <div class="mi-price">24 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-cat">
+      <h3>Entrées</h3>
+      <div class="cat-sub">Pour ouvrir l'appétit</div>
+      <div class="menu-cols">
+        <div class="menu-item">
+          <div><div class="mi-name">Chili con carne</div><div class="mi-desc">Boeuf, haricots rouges, épices</div></div>
+          <div class="mi-price">11 €</div>
+        </div>
+        <div class="menu-item">
+          <div><div class="mi-name">Ailes de poulet buffalo</div><div class="mi-desc">Sauce piquante, dip ranch</div></div>
+          <div class="mi-price">12 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-cat">
+      <h3>Desserts</h3>
+      <div class="cat-sub">La dernière ligne droite</div>
+      <div class="menu-cols">
+        <div class="menu-item">
+          <div><div class="mi-name">Cheesecake New York</div><div class="mi-desc">Coulis fruits rouges</div></div>
+          <div class="mi-price">9 €</div>
+        </div>
+        <div class="menu-item">
+          <div><div class="mi-name">Brownie tiède</div><div class="mi-desc">Glace vanille, sauce caramel</div></div>
+          <div class="mi-price">9 €</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFOS -->
+<section class="info" id="infos">
+  <div class="wrap info-grid">
+    <div>
+      <div class="sec-tag">Horaires</div>
+      <h2 class="sec-title">Ouvert</h2>
+      <div class="divider"></div>
+      <div class="hours-row"><span>Lundi</span><b>Fermé</b></div>
+      <div class="hours-row"><span>Mardi — Jeudi</span><b>12h — 14h30 · 19h — 22h30</b></div>
+      <div class="hours-row"><span>Vendredi — Samedi</span><b>12h — 15h · 19h — 23h30</b></div>
+      <div class="hours-row"><span>Dimanche</span><b>12h — 15h</b></div>
+    </div>
+    <div>
+      <div class="sec-tag">Nous trouver</div>
+      <h2 class="sec-title">Contact</h2>
+      <div class="divider"></div>
+      <div class="contact-line"><b>Adresse</b>12 rue de la République, 95100 Argenteuil</div>
+      <div class="contact-line"><b>Téléphone</b>01 39 00 00 00</div>
+      <div class="contact-line"><b>Email</b>bonjour@ledallas.fr</div>
+      <div class="contact-line"><b>Parking</b>Gratuit à proximité</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESA -->
+<section class="resa" id="resa">
+  <div class="wrap">
+    <div class="sec-tag">Réservation</div>
+    <h2 class="sec-title">Réservez votre table</h2>
+    <p>Complétez le formulaire, on vous rappelle pour confirmer. Pour les groupes de plus de 8, appelez-nous directement.</p>
+    <form onsubmit="event.preventDefault();this.reset();document.getElementById('ok').style.display='block';">
+      <div>
+        <label>Nom</label>
+        <input type="text" required placeholder="Votre nom">
+      </div>
+      <div>
+        <label>Téléphone</label>
+        <input type="tel" required placeholder="06 __ __ __ __">
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="date" required>
+      </div>
+      <div>
+        <label>Couverts</label>
+        <select>
+          <option>2 personnes</option>
+          <option>3 personnes</option>
+          <option>4 personnes</option>
+          <option>5 personnes</option>
+          <option>6 personnes et +</option>
+        </select>
+      </div>
+      <div class="full">
+        <button type="submit" class="btn" style="width:100%;border:none;cursor:pointer">Demander une réservation</button>
+      </div>
+      <p id="ok" class="full" style="display:none;color:var(--or-clair);text-align:center">Merci, votre demande est enregistrée. On vous rappelle vite.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo">LE <b>DALLAS</b></div>
+    <div class="social">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">TripAdvisor</a>
+    </div>
+    <div class="copy">© 2026 Le Dallas · Steakhouse &amp; Grill · Argenteuil · Tous droits réservés</div>
+  </div>
+</footer>
+
+</body>
+</html>

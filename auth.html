@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dallas — Espace membre (démo Supabase Auth)</title>
+<style>
+  :root{
+    --noir:#141210;--noir-2:#1e1b18;--creme:#f4ede0;
+    --or:#c8922e;--or-clair:#e0b556;--rouge:#8f2d21;--gris:#a89f92;
+    --vert:#3f7d4e;
+    --font-titre:'Georgia',serif;--font-corps:'Helvetica Neue',Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--noir);color:var(--creme);font-family:var(--font-corps);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{width:100%;max-width:420px;background:var(--noir-2);
+    border:1px solid rgba(200,146,46,.25);border-radius:6px;padding:36px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .logo{font-family:var(--font-titre);font-size:1.6rem;letter-spacing:2px;text-align:center;margin-bottom:6px}
+  .logo b{color:var(--or-clair);font-weight:normal}
+  .sub{text-align:center;color:var(--gris);font-size:.8rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+  label{display:block;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--gris);margin-bottom:6px;margin-top:16px}
+  input{width:100%;padding:12px 14px;background:var(--noir);border:1px solid rgba(168,159,146,.25);
+    color:var(--creme);border-radius:3px;font-family:inherit;font-size:.95rem}
+  input:focus{outline:none;border-color:var(--or)}
+  .btn{width:100%;margin-top:22px;padding:13px;border:none;border-radius:3px;cursor:pointer;
+    background:var(--or);color:var(--noir);font-weight:bold;letter-spacing:1px;text-transform:uppercase;font-size:.85rem;
+    transition:background .2s}
+  .btn:hover{background:var(--or-clair)}
+  .btn.ghost{background:transparent;border:1px solid var(--gris);color:var(--creme);margin-top:10px}
+  .btn.ghost:hover{border-color:var(--or);color:var(--or-clair)}
+  .msg{margin-top:18px;padding:12px;border-radius:3px;font-size:.85rem;display:none}
+  .msg.err{background:rgba(143,45,33,.2);border:1px solid var(--rouge);color:#e8a99f;display:block}
+  .msg.ok{background:rgba(63,125,78,.2);border:1px solid var(--vert);color:#a3d9b1;display:block}
+  .divider{height:1px;background:rgba(168,159,146,.15);margin:24px 0}
+  /* Vue connectée */
+  #loggedIn{display:none;text-align:center}
+  #loggedIn .hi{font-family:var(--font-titre);font-size:1.4rem;margin-bottom:8px}
+  #loggedIn .email{color:var(--or-clair);margin-bottom:20px}
+  .badge{display:inline-block;background:rgba(63,125,78,.2);border:1px solid var(--vert);
+    color:#a3d9b1;padding:4px 12px;border-radius:20px;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+  .config-warn{background:rgba(143,45,33,.15);border:1px solid var(--rouge);color:#e8a99f;
+    padding:12px;border-radius:3px;font-size:.8rem;margin-bottom:20px;line-height:1.5;display:none}
+  a.back{display:block;text-align:center;margin-top:20px;color:var(--gris);font-size:.8rem;text-decoration:none}
+  a.back:hover{color:var(--or-clair)}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">LE <b>DALLAS</b></div>
+  <div class="sub">Espace membre</div>
+
+  <div id="configWarn" class="config-warn"></div>
+
+  <!-- VUE DECONNECTE -->
+  <div id="loggedOut">
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="toi@exemple.fr" autocomplete="email">
+
+    <label for="password">Mot de passe</label>
+    <input id="password" type="password" placeholder="6 caractères minimum" autocomplete="current-password">
+
+    <button class="btn" onclick="seConnecter()">Se connecter</button>
+    <button class="btn ghost" onclick="sInscrire()">Créer un compte</button>
+  </div>
+
+  <!-- VUE CONNECTE -->
+  <div id="loggedIn">
+    <div class="badge">Connecté</div>
+    <div class="hi">Bienvenue au Dallas.</div>
+    <div class="email" id="userEmail"></div>
+    <button class="btn ghost" onclick="seDeconnecter()">Se déconnecter</button>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <a class="back" href="index.html">&larr; Retour au site</a>
+</div>
+
+<!-- 1. On charge la librairie Supabase depuis un CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // =========================================================
+  //  CONFIG  -  À REMPLIR avec les infos de TON projet Supabase
+  //  Dashboard Supabase > Project Settings > API
+  // =========================================================
+  const SUPABASE_URL = "https://TON-PROJET.supabase.co";
+  const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+  // =========================================================
+
+  // 2. On crée le client Supabase (le "téléphone" vers ton backend)
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const $ = (id) => document.getElementById(id);
+
+  // Petit garde-fou : si les clés ne sont pas remplies, on prévient
+  if (SUPABASE_URL.includes("TON-PROJET")) {
+    $("configWarn").style.display = "block";
+    $("configWarn").innerHTML = "Config manquante. Remplace SUPABASE_URL et SUPABASE_ANON_KEY dans le code (bas du fichier) par les clés de ton projet Supabase.";
+  }
+
+  function afficherMsg(texte, type) {
+    const m = $("msg");
+    m.textContent = texte;
+    m.className = "msg " + type; // "ok" ou "err"
+  }
+
+  // --- INSCRIPTION ---
+  async function sInscrire() {
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    const { data, error } = await supa.auth.signUp({ email, password });
+    if (error) { afficherMsg(error.message, "err"); return; }
+    // Selon tes réglages Supabase, un email de confirmation peut être exigé
+    if (data.user && !data.session) {
+      afficherMsg("Compte créé. Confirme ton email avant de te connecter.", "ok");
+    } else {
+      afficherMsg("Compte créé et connecté.", "ok");
+    }
+  }
+
+  // --- CONNEXION ---
+  async function seConnecter() {
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    const { data, error } = await supa.auth.signInWithPassword({ email, password });
+    if (error) { afficherMsg(error.message, "err"); return; }
+    afficherMsg("Connexion réussie.", "ok");
+  }
+
+  // --- DECONNEXION ---
+  async function seDeconnecter() {
+    await supa.auth.signOut();
+    afficherMsg("Déconnecté.", "ok");
+  }
+
+  // --- ETAT DE SESSION ---
+  // 3. On écoute les changements : connexion, déconnexion, refresh
+  //    Cet écouteur se déclenche tout seul au chargement et à chaque event.
+  supa.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      // Utilisateur connecté : on montre la vue "membre"
+      $("loggedOut").style.display = "none";
+      $("loggedIn").style.display = "block";
+      $("userEmail").textContent = session.user.email;
+    } else {
+      // Personne de connecté : on montre le formulaire
+      $("loggedOut").style.display = "block";
+      $("loggedIn").style.display = "none";
+    }
+  });
+</script>
+</body>
+</html>
